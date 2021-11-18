@@ -116,9 +116,9 @@ int main(int argc, char *argv[ ]){
             printf("Client-send() error lol!");
         else
             printf("client-send is OK...!\n");
+        close(new_fd);
+        printf("Server-new socket, new_fd closed successfully...\n");
     }
-    close(new_fd);
-    printf("Server-new socket, new_fd closed successfully...\n");
     close(sockfd);
     printf("Server-socket, sockfd closed successfully...\n");
     return 0;
