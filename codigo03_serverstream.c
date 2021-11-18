@@ -25,6 +25,7 @@ int run_command(char* program, char** arg_list,char **data);
 int sockfd;
 int main(int argc, char *argv[ ]){
     int numbytes=0;
+    int hijo_id=0;
     char buf[MAXDATASIZE];
     char* arg_list[] = {
         "ls",
@@ -81,44 +82,39 @@ int main(int argc, char *argv[ ]){
         printf("Server-listen() is OK...Listening...\n");
     sin_size = sizeof(struct sockaddr_in);
 
+    /* clean all the dead processes */
+    if((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1){
+        printf("Server-accept() error");
+        exit(1);
+    }
+    printf("Server-accept() is OK...\n");
+    printf("Server-new socket, new_fd is OK...\n");
     while(1){
-        /* clean all the dead processes */
-        if((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1){
-            printf("Server-accept() error");
-            exit(1);
-        }
-        printf("Server-accept() is OK...\n");
-        printf("Server-new socket, new_fd is OK...\n");
-        // Prueba
-        char buffer_client[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &their_addr.sin_addr, buffer_client, sizeof( buffer_client ));
-        printf( "address:%s\n", buffer_client);
-        // Prueba
         printf("Server: Got connection from %s\n", inet_ntoa(their_addr.sin_addr));
         //Leyendo
         if((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1){
-            printf("recv()");
+            printf("recv()\n");
+            printf("Error:%s\n",strerror(errno));
             exit(1);
         }
         else
             printf("Server-The recv() is OK...\n");
         buf[numbytes] = '\0';
         printf("Server-Received: %s", buf);
-        run_command("ls",arg_list,&data);
-
-        printf("Server-Closing sockfd\n");
+        hijo_id=run_command("ls",arg_list,&data);
+        printf("Se ejecuto el comando con el hijo %ld\n",hijo_id);
+        printf("Server-sends: Enviando respuesta comando\n %s", data);
         // if(send(new_fd, "This is a test string from server!\n", 37, 0) == -1)
         //   printf("Server-send() error lol!");
         // else
         //   printf("Server-send is OK...!\n");
-        printf("Enviando %s\n",data);
         if(send(new_fd, data, 10000, 0) == -1)
-            printf("Client-send() error lol!");
+            printf("Server-send() error lol!");
         else
-            printf("client-send is OK...!\n");
-        close(new_fd);
-        printf("Server-new socket, new_fd closed successfully...\n");
+            printf("Server-send is OK...!\n");
     }
+    close(new_fd);
+    printf("Server-new socket, new_fd closed successfully...\n");
     close(sockfd);
     printf("Server-socket, sockfd closed successfully...\n");
     return 0;
@@ -148,13 +144,12 @@ int run_command(char* program, char** arg_list,char **data){
         close(pipefd[1]); //Close writing end
         char buffer[MAXRESPONSESIZE];//Buffer for reading pipe
         read(pipefd[0], buffer, sizeof(buffer));
-        int retorno_wait =  wait( &arg_wait );
-        printf( "Proceso padre, despues de wait\n" );
-        printf( "Proceso padre, el valor &arg_wait=%X\n",&arg_wait );
-        printf( "Proceso padre, la variable arg_wait=%d\n",arg_wait );
-        printf( "Proceso padre, la variable retorno_wait=%d\n",retorno_wait );
+        // int retorno_wait =  wait( &arg_wait );
+        // printf( "Proceso padre, despues de wait\n" );
+        // printf( "Proceso padre, el valor &arg_wait=%X\n",&arg_wait );
+        // printf( "Proceso padre, la variable arg_wait=%d\n",arg_wait );
+        // printf( "Proceso padre, la variable retorno_wait=%d\n",retorno_wait );
         *data=buffer;
-        printf("%s\n",buffer);
         return child_pid;
     }
     else{
@@ -163,7 +158,7 @@ int run_command(char* program, char** arg_list,char **data){
         dup2(pipefd[1],2);//Redirects default error to pipe write end
         close(pipefd[1]);//Close pipe's write end
         execvp(program, arg_list);
-        fprintf (stderr, "an error occurred in execvp\n");
+        fprintf(stderr, "an error occurred in execvp\n");
         abort();
     }
 }
