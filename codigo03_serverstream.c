@@ -77,18 +77,23 @@ int main(int argc, char *argv[ ]){
     if(listen(sockfd, BACKLOG) == -1){
         printf("Server-listen() error");
         exit(1);
-    }
-    while(1){
+    }else
         printf("Server-listen() is OK...Listening...\n");
-        /* clean all the dead processes */
+    sin_size = sizeof(struct sockaddr_in);
 
-        sin_size = sizeof(struct sockaddr_in);
+    while(1){
+        /* clean all the dead processes */
         if((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1){
             printf("Server-accept() error");
             exit(1);
         }
         printf("Server-accept() is OK...\n");
         printf("Server-new socket, new_fd is OK...\n");
+        // Prueba
+        char buffer_client[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &their_addr.sin_addr, buffer_client, sizeof( buffer_client ));
+        printf( "address:%s\n", buffer_client);
+        // Prueba
         printf("Server: Got connection from %s\n", inet_ntoa(their_addr.sin_addr));
         //Leyendo
         if((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1){
@@ -111,10 +116,11 @@ int main(int argc, char *argv[ ]){
             printf("Client-send() error lol!");
         else
             printf("client-send is OK...!\n");
-        close(new_fd);
-        printf("Server-new socket, new_fd closed successfully...\n");
     }
+    close(new_fd);
+    printf("Server-new socket, new_fd closed successfully...\n");
     close(sockfd);
+    printf("Server-socket, sockfd closed successfully...\n");
     return 0;
 }
 void manejador_senales(int sig){

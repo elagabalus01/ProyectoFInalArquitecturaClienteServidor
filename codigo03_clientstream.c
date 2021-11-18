@@ -50,20 +50,24 @@ int main(int argc, char *argv[]){
     their_addr.sin_port = htons(PORT);
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
 
+    char command[10000];
     // zero the rest of the struct
     memset(&(their_addr.sin_zero), '\0', 8);
     if(connect(sockfd, (struct sockaddr *)&their_addr, sizeof(struct sockaddr)) == -1){
-        printf("connect()");
+        printf("connect()\n");
+        printf("Error; %s\n",strerror(errno));
         exit(1);
     }
-    else
+    else{
         printf("Client-The connect() is OK...\n");
-    char command[10000];
+    }
     while(1){
         printf("SSH>");
         scanf("%s^",&command);
-        if(send(sockfd, "command",10000, 0) == -1)
-            printf("Error: Client-send() error lol!");
+        if(send(sockfd, "command",10000, 0) == -1){
+            printf("Error: Client-send() error lol!\n");
+            printf("Error: %s\n",strerror(errno));
+        }
         else
             printf("client-send is OK...!\n");
         puts("Esperando respuesta del servidor");
@@ -75,8 +79,8 @@ int main(int argc, char *argv[]){
           printf("Client-The recv() is OK...\n");
         buf[numbytes] = '\0';
         printf("Client-Received: %s\n", buf);
-        printf("Client-Closing sockfd\n");
     }
+    printf("Client-Closing sockfd\n");
     close(sockfd);
     return 0;
 }
