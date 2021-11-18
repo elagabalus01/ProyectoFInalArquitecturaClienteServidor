@@ -8,4 +8,4 @@ clean:server client
 build: server client
 
 run: build
-	${BIN}/server
+	${BIN}/server 2> errores.log

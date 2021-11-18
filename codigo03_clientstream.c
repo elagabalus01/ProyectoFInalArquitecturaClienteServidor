@@ -7,17 +7,17 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
 // the port client will be connecting to
 #define PORT 3490
 // max number of bytes we can get at once
-#define MAXDATASIZE 300
+#define MAXDATASIZE 10000
 
 int main(int argc, char *argv[]){
     int sockfd, numbytes;
     char buf[MAXDATASIZE];
     struct hostent *he;
-
     // connectors address information
     struct sockaddr_in their_addr;
     // if no command line argument supplied
@@ -57,21 +57,26 @@ int main(int argc, char *argv[]){
         exit(1);
     }
     else
-    printf("Client-The connect() is OK...\n");
-
-    // if((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1){
-    //   printf("recv()");
-    //   exit(1);
-    // }
-    // else
-    //   printf("Client-The recv() is OK...\n");
-    if(send(sockfd, "Ángel Santander: This is a test string from client!\n", 68, 0) == -1)
-    printf("Client-send() error lol!");
-    else
-    printf("client-send is OK...!\n");
-    buf[numbytes] = '\0';
-    printf("Client-Received: %s", buf);
-    printf("Client-Closing sockfd\n");
+        printf("Client-The connect() is OK...\n");
+    char command[10000];
+    while(1){
+        printf("SSH>");
+        scanf("%s^",&command);
+        if(send(sockfd, "command",10000, 0) == -1)
+            printf("Error: Client-send() error lol!");
+        else
+            printf("client-send is OK...!\n");
+        puts("Esperando respuesta del servidor");
+        if((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1){
+          printf("Error recv()");
+          exit(1);
+        }
+        else
+          printf("Client-The recv() is OK...\n");
+        buf[numbytes] = '\0';
+        printf("Client-Received: %s\n", buf);
+        printf("Client-Closing sockfd\n");
+    }
     close(sockfd);
     return 0;
 }
