@@ -8,14 +8,17 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-
+#include <string.h>
+#include "LecturaComando.h"
 // the port client will be connecting to
 #define PORT 3490
 // max number of bytes we can get at once
 #define MAXDATASIZE 10000
 
 int main(int argc, char *argv[]){
-    int sockfd, numbytes;
+    int sockfd, numbytes,command_size;
+    char *response=(char*)malloc(MAX_NAME_SZ);
+    int response_size=0;
     char buf[MAXDATASIZE];
     struct hostent *he;
     // connectors address information
@@ -50,7 +53,7 @@ int main(int argc, char *argv[]){
     their_addr.sin_port = htons(PORT);
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
 
-    char command[10000];
+    char *command;
     // zero the rest of the struct
     memset(&(their_addr.sin_zero), '\0', 8);
     if(connect(sockfd, (struct sockaddr *)&their_addr, sizeof(struct sockaddr)) == -1){
@@ -62,9 +65,10 @@ int main(int argc, char *argv[]){
         printf("Client-The connect() is OK...\n");
     }
     while(1){
-        printf("SSH>");
-        scanf("%s^",&command);
-        if(send(sockfd, "command",10000-1, 0) == -1){
+        command=read_prompt();
+        command_size=strlen(command);
+        printf("Echo command: %s\n",command);
+        if(send(sockfd,command,command_size,0) == -1){
             printf("Error: Client-send() error lol!\n");
             printf("Error: %s\n",strerror(errno));
         }
@@ -78,7 +82,10 @@ int main(int argc, char *argv[]){
         else
           printf("Client-The recv() is OK...\n");
         buf[numbytes] = '\0';
-        printf("Client-Received: %s\n", buf);
+        response_size=strlen(buf);
+        response=(char*)realloc(response,sizeof(char)*response_size);
+        response=strcpy(response,buf);
+        printf("Client-Received: %s\n", response);
     }
     printf("Client-Closing sockfd\n");
     close(sockfd);
