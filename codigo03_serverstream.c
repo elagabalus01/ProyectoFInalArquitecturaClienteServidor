@@ -100,7 +100,7 @@ int main(int argc, char *argv[ ]){
         else
             printf("Server-The recv() is OK...\n");
         buf[numbytes] = '\0';
-        printf("Server-Received: %s", buf);
+        printf("Server-Received: %s\n", buf);
         hijo_id=run_command("ls",arg_list,&data);
         printf("Se ejecuto el comando con el hijo %ld\n",hijo_id);
         printf("Server-sends: Enviando respuesta comando\n %s", data);
@@ -144,11 +144,11 @@ int run_command(char* program, char** arg_list,char **data){
         close(pipefd[1]); //Close writing end
         char buffer[MAXRESPONSESIZE];//Buffer for reading pipe
         read(pipefd[0], buffer, sizeof(buffer));
-        // int retorno_wait =  wait( &arg_wait );
-        // printf( "Proceso padre, despues de wait\n" );
-        // printf( "Proceso padre, el valor &arg_wait=%X\n",&arg_wait );
-        // printf( "Proceso padre, la variable arg_wait=%d\n",arg_wait );
-        // printf( "Proceso padre, la variable retorno_wait=%d\n",retorno_wait );
+        int retorno_wait =  wait( &arg_wait );
+        printf( "Proceso padre, despues de wait\n" );
+        printf( "Proceso padre, el valor &arg_wait=%X\n",&arg_wait );
+        printf( "Proceso padre, la variable arg_wait=%d\n",arg_wait );
+        printf( "Proceso padre, la variable retorno_wait=%d\n",retorno_wait );
         *data=buffer;
         return child_pid;
     }

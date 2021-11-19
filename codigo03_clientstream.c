@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
     while(1){
         printf("SSH>");
         scanf("%s^",&command);
-        if(send(sockfd, "command",10000, 0) == -1){
+        if(send(sockfd, "command",10000-1, 0) == -1){
             printf("Error: Client-send() error lol!\n");
             printf("Error: %s\n",strerror(errno));
         }
