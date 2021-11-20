@@ -78,48 +78,52 @@ int main(int argc, char *argv[ ]){
     }else
         printf("Server-listen() is OK...Listening...\n");
     sin_size = sizeof(struct sockaddr_in);
-
-    /* clean all the dead processes */
-    if((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1){
-        printf("Server-accept() error");
-        exit(1);
-    }
-    printf("Server-accept() is OK...\n");
-    printf("Server-new socket, new_fd is OK...\n");
     while(1){
-        printf("Server: Got connection from %s\n", inet_ntoa(their_addr.sin_addr));
-        //Leyendo
-        if((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1){
-            printf("recv()\n");
-            printf("Error:%s\n",strerror(errno));
+        /* clean all the dead processes */
+        if((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1){
+            printf("Server-accept() error");
             exit(1);
         }
-        else
+        printf("Server-accept() is OK...\n");
+        printf("Server: Got connection from %s\n", inet_ntoa(their_addr.sin_addr));
+        printf("Server-new socket, new_fd is OK...\n");
+        while(1){
+            //Leyendo
+            if((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1){
+                printf("recv()\n");
+                printf("Error:%s\n",strerror(errno));
+                exit(1);
+            }
+            else
             printf("Server-The recv() is OK...\n");
-        buf[numbytes] = '\0';
-        printf("Procesando comando %s\n",buf);
-        command=realloc(command,strlen(buf)*sizeof(char));
-        command=strcpy(command,buf);
-        printf("Procesando comando %s\n",strerror(errno));
-        puts("Paso el strcpy");
-        exec_args=split(command);
-        printf("Server-Received: %s\n", buf);
-        hijo_id=run_command(exec_args[0],exec_args,&data);
-        printf("Se ejecuto el comando con el hijo %ld\n",hijo_id);
-        printf("Server-sends: Enviando respuesta comando\n %s", data);
-        // if(send(new_fd, "This is a test string from server!\n", 37, 0) == -1)
-        //   printf("Server-send() error lol!");
-        // else
-        //   printf("Server-send is OK...!\n");
-        if(aux=send(new_fd, data, 10000-1, 0) == -1)
-            printf("Server-send() error lol!");
-        else{
-            printf("Server-send is OK...!\n");
-            printf("Se enviaron %d bytes\n",aux);
-        }
+            buf[numbytes] = '\0';
+            printf("Número de bytes recividos %d\n",numbytes);
+            if(numbytes>0){
+                printf("Procesando comando %s\n",buf);
+                command=realloc(command,strlen(buf)*sizeof(char));
+                puts("Copiando cadena");
+                command=strcpy(command,buf);
+                printf("Error: %s\n",strerror(errno));
+                puts("Paso el strcpy");
+                exec_args=split(command);
+                printf("Server-Received: %s\n", buf);
+                hijo_id=run_command(exec_args[0],exec_args,&data);
+                printf("Se ejecuto el comando con el hijo %ld\n",hijo_id);
+                printf("Server-sends: Enviando respuesta comando\n %s", data);
+                if(aux=send(new_fd, data,strlen(data), 0) == -1)
+                printf("Server-send() error lol!");
+                else{
+                    printf("Server-send is OK...!\n");
+                    printf("Se enviaron %d bytes\n",aux);
+                }
+            }else{
+                puts("No se recibió nada del cliente");
+                break;
+                }
+            }
+            close(new_fd);
+            printf("Server-new socket, new_fd closed successfully...\n");
     }
-    close(new_fd);
-    printf("Server-new socket, new_fd closed successfully...\n");
     close(sockfd);
     printf("Server-socket, sockfd closed successfully...\n");
     return 0;

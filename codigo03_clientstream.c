@@ -20,6 +20,7 @@ int main(int argc, char *argv[]){
     char *response=(char*)malloc(MAX_NAME_SZ);
     int response_size=0;
     char buf[MAXDATASIZE];
+    int running=1;
     struct hostent *he;
     // connectors address information
     struct sockaddr_in their_addr;
@@ -64,10 +65,20 @@ int main(int argc, char *argv[]){
     else{
         printf("Client-The connect() is OK...\n");
     }
-    while(1){
+    while(running){
         command=read_prompt();
-        command_size=strlen(command);
+        if(!command){
+            puts("Se recibió comando vacío");
+            command=(char*)realloc(command,sizeof(char)*strlen("echo \"Sin comando\""));
+            strcpy(command,"echo \"Sin comando\"");
+        }
+        else if(strcmp(command,"salir")==0){
+            puts("Desconectandose del servidor");
+            running=0;
+            break;
+        }
         printf("Echo command: %s\n",command);
+        command_size=strlen(command);
         if(send(sockfd,command,command_size,0) == -1){
             printf("Error: Client-send() error lol!\n");
             printf("Error: %s\n",strerror(errno));
@@ -81,6 +92,7 @@ int main(int argc, char *argv[]){
         }
         else
           printf("Client-The recv() is OK...\n");
+        printf("Se recibieron %d bytes\n",numbytes);
         buf[numbytes] = '\0';
         response_size=strlen(buf);
         response=(char*)realloc(response,sizeof(char)*response_size);

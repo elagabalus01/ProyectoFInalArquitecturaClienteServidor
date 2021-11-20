@@ -24,16 +24,20 @@ char *read_prompt(){
     char *str = malloc(MAX_NAME_SZ);
     /* Ask user for str. */
     /* Get the str, with size limit. */
-    printf("ssh>");
+    printf("Telnet> ");
     str=fgets(str, MAX_NAME_SZ, stdin);
 
     /* Remove trailing newline, if there. */
 
-    if ((strlen(str) > 0) && (str[strlen (str) - 1] == '\n'))
+    if ((strlen(str) > 1) && (str[strlen (str) - 1] == '\n')){
         str[strlen (str) - 1] = '\0';
-    str=realloc(str,sizeof(char)*(strlen(str)));//Ajustarlo al tamaño real del dato
-    printf("El comando %s\n",str);
-    return str;
+        str=realloc(str,sizeof(char)*(strlen(str)));//Ajustarlo al tamaño real del dato
+        printf("El comando %s\n",str);
+        return str;
+    }else{
+        puts("No se leyó nada");
+        return NULL;
+    }
 }
 char **split(char *str){
     char ** res  = NULL;
