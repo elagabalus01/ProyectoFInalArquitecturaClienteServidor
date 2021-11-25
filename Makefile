@@ -1,9 +1,9 @@
 BIN="./bin"
 bin_folder:
 	mkdir -p ${BIN}
-server:codigo03_serverstream.c
+server:serverstream.c
 	gcc -o ${BIN}/$@ $<
-client:codigo03_clientstream.c
+client:clientstream.c
 	gcc -o ${BIN}/$@ $<
 clean:server client bin_folder
 	rm ${BIN}/*
