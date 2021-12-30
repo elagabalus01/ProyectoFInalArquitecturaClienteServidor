@@ -31,6 +31,7 @@ char **read_command(){
 }
 
 // Función para leer el comando del cliente
+// Ya no se usa
 char *read_prompt(){
     char *str = malloc(MAX_INPUT_SIZE);
     printf("Telnet> ");

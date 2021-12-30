@@ -102,7 +102,7 @@ int main(int argc, char *argv[ ]){
     // Se termina con caracter nulo el resto de la estructura
     memset(&(my_addr.sin_zero), '\0', 8);
     if(bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1){
-        printf("Server-bind() error");
+        printf("Server-bind() error %s\n",strerror(errno));
         exit(1);
     }else
     printf("Server-bind() is OK...\n");

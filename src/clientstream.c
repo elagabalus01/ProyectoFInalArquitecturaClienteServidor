@@ -25,6 +25,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <readline/readline.h>
+#include <readline/history.h>
 #include "LecturaComando.h"
 
 // Puerto al que el cliente se conecta
@@ -98,25 +99,26 @@ int main(int argc, char *argv[]){
     // Bucle para preguntar por comando, enviar y recibir su información
     while(running){
         command=readline("comando>");
-        if(!command){
+        command_size=strlen(command);
+        if(command_size<1){
             puts("Client-Info: Command is empty");
             command=(char*)realloc(command,sizeof(char)*strlen("echo \"Without command\""));
             strcpy(command,"echo \"Without command\"");
-        
+            continue;
         // Si se manda instrucción de salida se termina el bucle
         }else if(strcmp(command,"exit")==0){
             puts("Client-Info: Exiting from server...");
             running=0;
             break;
         }
-        
-        command_size=strlen(command);
-        
+        add_history(command);
         if(send(sockfd,command,command_size,0) == -1){
-            printf("Error: Client-send() error lol!\n");
+            printf("Error: Client-send() error\n");
             printf("Error: %s\n",strerror(errno));
         }else
             printf("Client-send is OK...!\n");
+        
+        printf("Se envía %s\n",command);
         puts("Client-Info: Waiting for answer from server");
         
         if((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1){
