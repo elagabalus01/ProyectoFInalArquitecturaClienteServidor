@@ -138,8 +138,7 @@ int main(int argc, char *argv[ ]){
                 printf("Error:%s\n",strerror(errno));
                 exit(1);
             }else
-            
-            printf("Server-The recv() is OK...\n");
+                printf("Server-The recv() is OK...\n");
             buf[numbytes] = '\0';
             printf("Server-Received bytes %d\n",numbytes);
 
@@ -211,8 +210,13 @@ int run_command(char* program, char** arg_list,char **data){
         printf( "Server-processing-parent: arg_wait=%d\n",arg_wait );
         printf( "Server-processing-parent: return_wait=%d\n",retorno_wait);
         data_size=strlen(buffer);
-        *data=(char*)realloc(*data,sizeof(char)*data_size);
-        *data=strcpy(*data,buffer);
+        if(data_size>0){
+            *data=(char*)realloc(*data,sizeof(char)*data_size);
+            *data=strcpy(*data,buffer);
+        }else{
+            *data=(char*)realloc(*data,sizeof(char)*3);
+            *data=strcpy(*data,"ok\n");
+        }
         return child_pid;
     }
     else{

@@ -5,7 +5,7 @@ bin_folder:
 server:${SRC}/serverstream.c
 	gcc -o ${BIN}/$@ $<
 client:${SRC}/clientstream.c
-	gcc -o ${BIN}/$@ $<
+	gcc -o ${BIN}/$@ $< -lreadline
 clean:server client bin_folder
 	rm ${BIN}/*
 build: bin_folder server client

@@ -24,6 +24,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <readline/readline.h>
 #include "LecturaComando.h"
 
 // Puerto al que el cliente se conecta
@@ -96,7 +97,7 @@ int main(int argc, char *argv[]){
 
     // Bucle para preguntar por comando, enviar y recibir su información
     while(running){
-        command=read_prompt();
+        command=readline("comando>");
         if(!command){
             puts("Client-Info: Command is empty");
             command=(char*)realloc(command,sizeof(char)*strlen("echo \"Without command\""));
@@ -126,13 +127,16 @@ int main(int argc, char *argv[]){
         
         // Se confirma el número de bytes que se recibieron
         printf("Client-Received %d bytes\n",numbytes);
-        buf[numbytes] = '\0';
-        response_size=strlen(buf);
-        response=(char*)realloc(response,sizeof(char)*response_size);
-        response=strcpy(response,buf);
+        if(numbytes>0){
+            buf[numbytes] = '\0';
+            response_size=strlen(buf);
+            response=(char*)realloc(response,sizeof(char)*response_size);
+            response=strcpy(response,buf);
 
-        // Se imprimen los bytes recibidos
-        printf("Client-Received: \n%s", response);
+            // Se imprimen los bytes recibidos
+            printf("Client-Received: \n%s", response);
+        }
+        
     }
 
     // Se cierra el socket que se había creado

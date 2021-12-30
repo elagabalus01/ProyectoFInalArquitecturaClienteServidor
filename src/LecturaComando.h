@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+
 #define MAX_INPUT_SIZE 256
 char **read_command();
 char **split(char* str);
