@@ -1,9 +1,10 @@
 BIN="./bin"
+SRC=./src
 bin_folder:
 	mkdir -p ${BIN}
-server:serverstream.c
+server:${SRC}/serverstream.c
 	gcc -o ${BIN}/$@ $<
-client:clientstream.c
+client:${SRC}/clientstream.c
 	gcc -o ${BIN}/$@ $<
 clean:server client bin_folder
 	rm ${BIN}/*

@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
-#define MAX_NAME_SZ 256
+#define MAX_INPUT_SIZE 256
 char **read_command();
 char **split(char* str);
 char *read_prompt();
@@ -31,9 +31,9 @@ char **read_command(){
 
 // Función para leer el comando del cliente
 char *read_prompt(){
-    char *str = malloc(MAX_NAME_SZ);
+    char *str = malloc(MAX_INPUT_SIZE);
     printf("Telnet> ");
-    str=fgets(str, MAX_NAME_SZ, stdin);
+    str=fgets(str, MAX_INPUT_SIZE, stdin);
 
     // Se intercambia '\n' por '\0'
     if ((strlen(str) > 1) && (str[strlen (str) - 1] == '\n')){
@@ -50,18 +50,18 @@ char *read_prompt(){
 // Función para separar el comando en argumentos a través del token ' '
 char **split(char *str){
     char ** res  = NULL;
-    char *p;
-    p=strtok(str, " ");
-    int n_spaces = 0, i;
-    while (p) {
+    char *aux;
+    int n_spaces = 0;
+    aux=strtok(str, " ");
+    while (aux!=NULL) {
         res = realloc (res, sizeof (char*) * ++n_spaces);
         if (res == NULL)
-        exit (-1);
-        res[n_spaces-1] = p;
-        p = strtok (NULL, " ");
+            exit (-1);
+        res[n_spaces-1] = aux;
+        aux = strtok (NULL, " ");
     }
 
     res = realloc (res, sizeof (char*) * (n_spaces+1));
-    res[n_spaces] = 0;
+    res[n_spaces] = '\0';
     return res;
 }

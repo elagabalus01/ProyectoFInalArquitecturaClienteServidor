@@ -65,11 +65,11 @@ int main(int argc, char *argv[ ]){
     int aux=0;
     int numbytes=0;
     int hijo_id=0;
-    char *command=(char*)malloc(MAX_NAME_SZ);
+    char *command=(char*)malloc(MAX_INPUT_SIZE);
     char **exec_args;
     char buf[MAXDATASIZE];
     int new_fd;
-    char *data=(char*)malloc(MAX_NAME_SZ);
+    char *data=(char*)malloc(MAX_INPUT_SIZE);
 
     // Conectores de información de dirección
     struct sockaddr_in my_addr;
@@ -152,7 +152,7 @@ int main(int argc, char *argv[ ]){
                 exec_args=split(command);
                 printf("Processing command: %s\n", buf);
                 hijo_id=run_command(exec_args[0],exec_args,&data);
-                printf("Server-Info: The command was executed by child %ld\n",hijo_id);
+                printf("Server-Info: The command was executed by child %d\n",hijo_id);
                 if(aux=send(new_fd, data, strlen(data), 0) == -1)
                     printf("Server-send() error lol!");
                 else{
@@ -207,7 +207,7 @@ int run_command(char* program, char** arg_list,char **data){
         fsync(pipefd[0]);
         printf("Buffer printing: %s\n",buffer);
         int retorno_wait =  wait( &arg_wait );
-        printf( "Server-processing-parent: value &arg_wait=%X\n",&arg_wait );
+        printf( "Server-processing-parent: value &arg_wait=%p\n",&arg_wait );
         printf( "Server-processing-parent: arg_wait=%d\n",arg_wait );
         printf( "Server-processing-parent: return_wait=%d\n",retorno_wait);
         data_size=strlen(buffer);

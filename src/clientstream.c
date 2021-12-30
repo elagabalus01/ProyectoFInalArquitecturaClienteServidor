@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
         -bandera para saber si está conectado el cliente
     */
     int sockfd, numbytes,command_size;
-    char *response=(char*)malloc(MAX_NAME_SZ);
+    char *response=(char*)malloc(MAX_INPUT_SIZE);
     int response_size=0;
     char buf[MAXDATASIZE];
     int running=1;
