@@ -109,7 +109,7 @@ int main(int argc, char *argv[ ]){
 
     // Se mantiene a la escucha al servidor
     if(listen(sockfd, BACKLOG) == -1){
-        printf("Server-listen() error");
+        printf("Server-listen() error %s\n",strerror(errno));
         exit(1);
     }else
         printf("Server-listen() is OK...Listening...\n");
@@ -121,7 +121,7 @@ int main(int argc, char *argv[ ]){
         
         // Se limpian todos los procesos muertos
         if((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1){
-            printf("Server-accept() error");
+            printf("Server-accept() error %s",strerror(errno));
             exit(1);
         }
 
